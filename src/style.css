@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-canvas: #FAFAF9;
+    --color-surface: #FFFFFF;
+    --color-border: #E7E5E4;
+    --color-ink: #1C1917;
+    --color-muted: #78716C;
+  }
+
+  .dark {
+    --color-canvas: #0F0F11;
+    --color-surface: #18181B;
+    --color-border: #27272A;
+    --color-ink: #F4F4F5;
+    --color-muted: #A1A1AA;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  /* Custom unobtrusive scrollbars */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #78716c30;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #78716c60;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
