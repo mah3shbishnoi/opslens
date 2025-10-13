@@ -5,9 +5,6 @@
       <h1 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-100 font-mono">
         Console Configuration & Data Connection
       </h1>
-      <p class="text-xs text-stone-500 mt-0.5">
-        Manage repository telemetry sources, authentication tokens, rate quotas, and interface aesthetics.
-      </p>
     </div>
 
     <div class="bg-white dark:bg-[#18181B] border border-stone-200 dark:border-stone-800 rounded-lg divide-y divide-stone-100 dark:divide-stone-800 shadow-subtle">
