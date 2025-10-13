@@ -109,17 +109,6 @@ Light-First Editorial Vue 3 Interface
 
 ---
 
-## Design System Principles
-
-OpsLens intentionally avoids generic AI-generated templates:
-* **Light-First Canvas**: Crafted on a warm, editorial `#FAFAF9` stone canvas with dark charcoal ink typography (`#1C1917`).
-* **Editorial Composition**: Replaces repetitive 4-card grids with horizontal information bands, asymmetric columns, two-flow comparative strips, and high-density data tables.
-* **Typography as Hierarchy**: Uses font weights, uppercase tracking, and tabular figures (`tabular-nums`) to direct focus without visual noise.
-* **Monospace Selectivity**: Monospace font (`JetBrains Mono`) is reserved strictly for technical tokens: commit SHAs, PR numbers, version tags, and timestamps.
-* **Restrained Palette**: Single-purpose semantic accents (Emerald for open items, Violet for merges, Rose for closed issues, Cobalt for links).
-
----
-
 ## Tech Stack
 
 * **Framework**: Vue 3 (Composition API with `<script setup>`)
@@ -129,29 +118,6 @@ OpsLens intentionally avoids generic AI-generated templates:
 * **Styling**: Tailwind CSS with bespoke editorial tokens
 * **Charting**: Apache ECharts (`echarts`)
 * **Icons**: Lucide Icons (`lucide-vue-next`)
-
----
-
-## Local Development
-
-### 1. Clone & Install Dependencies
-```bash
-git clone https://github.com/mah3shbishnoi/opslens.git
-cd opslens
-npm install
-```
-
-### 2. Start Development Server
-```bash
-npm run dev
-```
-The application will launch at `http://localhost:5173`.
-
-### 3. Build for Production
-```bash
-npm run build
-```
-Type checks the application via `vue-tsc` and compiles optimized static assets using Vite.
 
 ---
 
