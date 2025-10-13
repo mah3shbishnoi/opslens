@@ -34,8 +34,8 @@
       <button
         type="button"
         class="p-1.5 text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-        :title="`Refresh repository data (${repoStore.lastRefreshedAt.toLocaleTimeString()})`"
-        @click="repoStore.loadRepository()"
+        :title="`Refresh active view data (${repoStore.lastRefreshedAt.toLocaleTimeString()})`"
+        @click="handleRefresh"
       >
         <RotateCw
           class="w-3.5 h-3.5"
@@ -59,12 +59,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { ChevronDown, Search, RotateCw, Sun, Moon } from 'lucide-vue-next'
 import { useRepositoryStore } from '@/stores/repositoryStore'
 import { usePreferencesStore } from '@/stores/preferencesStore'
 
+const route = useRoute()
 const repoStore = useRepositoryStore()
 const prefStore = usePreferencesStore()
+
+const handleRefresh = () => {
+  repoStore.refreshActiveView(route.name as string)
+}
 
 const isMac = computed(() => {
   if (typeof navigator === 'undefined') return false

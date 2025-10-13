@@ -154,31 +154,31 @@ const navItems = computed(() => [
     path: '/pull-requests',
     label: 'Pull Requests',
     icon: GitPullRequest,
-    count: repoStore.openPRsCount
+    count: repoStore.openPRsCount || undefined
   },
   {
     path: '/issues',
     label: 'Issues',
     icon: AlertCircle,
-    count: repoStore.openIssuesCount
+    count: repoStore.openIssuesCount || undefined
   },
   {
     path: '/commits',
     label: 'Commits',
     icon: GitCommit,
-    count: repoStore.commits.length
+    count: repoStore.commits.length || undefined
   },
   {
     path: '/releases',
     label: 'Releases',
     icon: Tag,
-    count: repoStore.releases.length
+    count: repoStore.releases.length || undefined
   },
   {
     path: '/contributors',
     label: 'Contributors',
     icon: Users,
-    count: repoStore.contributors.length
+    count: repoStore.contributors.length || undefined
   }
 ])
 </script>

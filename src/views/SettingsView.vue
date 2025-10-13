@@ -128,7 +128,8 @@ const tokenSavedMessage = ref('')
 const saveToken = () => {
   prefStore.updateToken(tokenInput.value.trim())
   tokenSavedMessage.value = 'GitHub token saved. Reloading repository...'
-  repoStore.loadRepository()
+  repoStore.clearCache()
+  repoStore.loadRepository(undefined, true)
   setTimeout(() => {
     tokenSavedMessage.value = ''
   }, 3000)
@@ -138,7 +139,8 @@ const removeToken = () => {
   tokenInput.value = ''
   prefStore.updateToken('')
   tokenSavedMessage.value = 'Token removed. Reverted to unauthenticated quota.'
-  repoStore.loadRepository()
+  repoStore.clearCache()
+  repoStore.loadRepository(undefined, true)
   setTimeout(() => {
     tokenSavedMessage.value = ''
   }, 3000)

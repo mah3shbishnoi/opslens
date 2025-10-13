@@ -24,8 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import Sidebar from './Sidebar.vue'
 import TopBar from './TopBar.vue'
 import RateLimitBanner from '@/components/common/RateLimitBanner.vue'
@@ -35,8 +35,19 @@ import { useRepositoryStore } from '@/stores/repositoryStore'
 import { usePreferencesStore } from '@/stores/preferencesStore'
 
 const router = useRouter()
+const route = useRoute()
 const repoStore = useRepositoryStore()
 const prefStore = usePreferencesStore()
+
+watch(
+  () => route.name,
+  (name) => {
+    if (name) {
+      repoStore.loadForRoute(String(name))
+    }
+  },
+  { immediate: true }
+)
 
 let pendingKey = ''
 let pendingKeyTimer: ReturnType<typeof setTimeout> | null = null
@@ -112,7 +123,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
 onMounted(() => {
   prefStore.applyTheme()
-  repoStore.loadRepository()
   window.addEventListener('keydown', handleKeyDown)
 })
 
