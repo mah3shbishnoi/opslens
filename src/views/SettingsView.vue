@@ -80,43 +80,7 @@
         </div>
       </div>
 
-      <!-- 4. Visual Theme -->
-      <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h3 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Color Aesthetic</h3>
-          <p class="text-xs text-stone-500 mt-0.5">Primary design is light-first editorial canvas; dark mode is clean charcoal.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button
-            type="button"
-            :class="[
-              'px-3 py-1.5 rounded-md text-xs font-medium border transition-colors flex items-center gap-1.5',
-              !prefStore.isDarkMode
-                ? 'bg-stone-900 text-white border-stone-900'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700'
-            ]"
-            @click="setTheme(false)"
-          >
-            <Sun class="w-3.5 h-3.5" />
-            <span>Light Theme</span>
-          </button>
-          <button
-            type="button"
-            :class="[
-              'px-3 py-1.5 rounded-md text-xs font-medium border transition-colors flex items-center gap-1.5',
-              prefStore.isDarkMode
-                ? 'bg-stone-100 text-stone-900 border-stone-100'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700'
-            ]"
-            @click="setTheme(true)"
-          >
-            <Moon class="w-3.5 h-3.5" />
-            <span>Dark Theme</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 5. Architecture Documentation -->
+      <!-- 4. Architecture Documentation -->
       <div class="p-6 space-y-3">
         <h3 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Architecture & Telemetry Pipeline</h3>
         <p class="text-xs text-stone-500 leading-relaxed">
@@ -152,7 +116,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Sun, Moon } from 'lucide-vue-next'
 import { useRepositoryStore } from '@/stores/repositoryStore'
 import { usePreferencesStore } from '@/stores/preferencesStore'
 
@@ -179,10 +142,5 @@ const removeToken = () => {
   setTimeout(() => {
     tokenSavedMessage.value = ''
   }, 3000)
-}
-
-const setTheme = (isDark: boolean) => {
-  prefStore.isDarkMode = isDark
-  prefStore.applyTheme()
 }
 </script>
