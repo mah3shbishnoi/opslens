@@ -11,18 +11,6 @@
         <span class="font-semibold text-stone-900 dark:text-stone-100 group-hover:underline">{{ repoStore.currentRepo }}</span>
         <ChevronDown class="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-600" />
       </button>
-
-      <!-- Data Status Mode Badge -->
-      <span
-        :class="[
-          'px-2 py-0.5 rounded text-[10px] font-mono font-medium',
-          repoStore.isFallback
-            ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
-            : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-        ]"
-      >
-        {{ repoStore.isFallback ? 'Sample Dataset' : 'Live GitHub API' }}
-      </span>
     </div>
 
     <!-- Right: Actions, Refresh, Search, Theme -->
