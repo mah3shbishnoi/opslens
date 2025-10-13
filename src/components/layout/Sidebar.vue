@@ -19,7 +19,7 @@
         <button
           type="button"
           class="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1 rounded transition-colors"
-          title="Search (⌘K)"
+          :title="isMac ? 'Search (⌘K)' : 'Search (Ctrl+K)'"
           @click="prefStore.openSearch"
         >
           <Search class="w-3.5 h-3.5" />
@@ -138,6 +138,11 @@ import { usePreferencesStore } from '@/stores/preferencesStore'
 
 const repoStore = useRepositoryStore()
 const prefStore = usePreferencesStore()
+
+const isMac = computed(() => {
+  if (typeof navigator === 'undefined') return false
+  return /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent || navigator.platform || '')
+})
 
 const navItems = computed(() => [
   {

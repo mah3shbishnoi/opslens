@@ -23,8 +23,10 @@
       >
         <Search class="w-3.5 h-3.5 text-stone-400" />
         <span class="text-stone-600 dark:text-stone-300 font-mono text-[11px]">Search...</span>
-        <kbd class="px-1 py-0.2 text-[9px] bg-white dark:bg-stone-900 rounded border border-stone-300 dark:border-stone-700 font-mono text-stone-400">
-          ⌘K
+        <kbd class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-white dark:bg-stone-900 rounded border border-stone-300 dark:border-stone-700 font-mono text-stone-600 dark:text-stone-300 font-medium leading-none">
+          <span v-if="isMac" class="text-[11px] leading-none">⌘</span>
+          <span v-else class="text-[9.5px] font-semibold tracking-tight">Ctrl</span>
+          <span>K</span>
         </kbd>
       </button>
 
@@ -56,10 +58,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ChevronDown, Search, RotateCw, Sun, Moon } from 'lucide-vue-next'
 import { useRepositoryStore } from '@/stores/repositoryStore'
 import { usePreferencesStore } from '@/stores/preferencesStore'
 
 const repoStore = useRepositoryStore()
 const prefStore = usePreferencesStore()
+
+const isMac = computed(() => {
+  if (typeof navigator === 'undefined') return false
+  return /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent || navigator.platform || '')
+})
 </script>
