@@ -119,142 +119,151 @@ export const useRepositoryStore = defineStore('repository', () => {
     const [owner, repo] = parts
     const resourcesToLoad = ROUTE_RESOURCE_MAP[activeRoute.value] || ['repo', 'prs', 'issues', 'commits', 'releases']
 
+    // Check what is already present in memory and cache
+    const promises: Promise<any>[] = []
+
+    // 1. Repo metadata (required across views)
+    const repoKey = `${owner}/${repo}:meta`
+    const cachedRepo = getCached<GitHubRepository>(repoKey)
+    if (!force && (repository.value || cachedRepo)) {
+      if (cachedRepo) repository.value = cachedRepo
+    } else {
+      promises.push(
+        fetchRepository(owner, repo)
+          .then((data) => {
+            repository.value = data
+            setCached(repoKey, data)
+            isFallback.value = false
+          })
+          .catch((err) => {
+            console.warn('OpsLens: Failed to fetch repository metadata', err)
+            if (!repository.value) repository.value = FALLBACK_REPO
+            setCached(repoKey, repository.value)
+            isFallback.value = true
+          })
+      )
+    }
+
+    // 2. Pull Requests
+    if (resourcesToLoad.includes('prs')) {
+      const prsKey = `${owner}/${repo}:prs`
+      const cachedPRs = getCached<GitHubPullRequest[]>(prsKey)
+      if (!force && (pullRequests.value.length > 0 || cachedPRs)) {
+        if (cachedPRs && pullRequests.value.length === 0) pullRequests.value = cachedPRs
+      } else {
+        promises.push(
+          fetchPullRequests(owner, repo, 'all', 60)
+            .then((data) => {
+              pullRequests.value = data
+              setCached(prsKey, data)
+            })
+            .catch((err) => {
+              console.warn('OpsLens: Failed to fetch pull requests', err)
+              if (pullRequests.value.length === 0) pullRequests.value = FALLBACK_PULL_REQUESTS
+              setCached(prsKey, pullRequests.value)
+            })
+        )
+      }
+    }
+
+    // 3. Issues
+    if (resourcesToLoad.includes('issues')) {
+      const issuesKey = `${owner}/${repo}:issues`
+      const cachedIssues = getCached<GitHubIssue[]>(issuesKey)
+      if (!force && (issues.value.length > 0 || cachedIssues)) {
+        if (cachedIssues && issues.value.length === 0) issues.value = cachedIssues
+      } else {
+        promises.push(
+          fetchIssues(owner, repo, 'all', 60)
+            .then((data) => {
+              issues.value = data
+              setCached(issuesKey, data)
+            })
+            .catch((err) => {
+              console.warn('OpsLens: Failed to fetch issues', err)
+              if (issues.value.length === 0) issues.value = FALLBACK_ISSUES
+              setCached(issuesKey, issues.value)
+            })
+        )
+      }
+    }
+
+    // 4. Commits
+    if (resourcesToLoad.includes('commits')) {
+      const commitsKey = `${owner}/${repo}:commits`
+      const cachedCommits = getCached<GitHubCommitItem[]>(commitsKey)
+      if (!force && (commits.value.length > 0 || cachedCommits)) {
+        if (cachedCommits && commits.value.length === 0) commits.value = cachedCommits
+      } else {
+        promises.push(
+          fetchCommits(owner, repo, 60)
+            .then((data) => {
+              commits.value = data
+              setCached(commitsKey, data)
+            })
+            .catch((err) => {
+              console.warn('OpsLens: Failed to fetch commits', err)
+              if (commits.value.length === 0) commits.value = FALLBACK_COMMITS
+              setCached(commitsKey, commits.value)
+            })
+        )
+      }
+    }
+
+    // 5. Releases
+    if (resourcesToLoad.includes('releases')) {
+      const releasesKey = `${owner}/${repo}:releases`
+      const cachedReleases = getCached<GitHubRelease[]>(releasesKey)
+      if (!force && (releases.value.length > 0 || cachedReleases)) {
+        if (cachedReleases && releases.value.length === 0) releases.value = cachedReleases
+      } else {
+        promises.push(
+          fetchReleases(owner, repo, 20)
+            .then((data) => {
+              releases.value = data
+              setCached(releasesKey, data)
+            })
+            .catch((err) => {
+              console.warn('OpsLens: Failed to fetch releases', err)
+              if (releases.value.length === 0) releases.value = FALLBACK_RELEASES
+              setCached(releasesKey, releases.value)
+            })
+        )
+      }
+    }
+
+    // 6. Contributors
+    if (resourcesToLoad.includes('contributors')) {
+      const contribsKey = `${owner}/${repo}:contribs`
+      const cachedContribs = getCached<GitHubContributor[]>(contribsKey)
+      if (!force && (contributors.value.length > 0 || cachedContribs)) {
+        if (cachedContribs && contributors.value.length === 0) contributors.value = cachedContribs
+      } else {
+        promises.push(
+          fetchContributors(owner, repo, 30)
+            .then((data) => {
+              contributors.value = data
+              setCached(contribsKey, data)
+            })
+            .catch((err) => {
+              console.warn('OpsLens: Failed to fetch contributors', err)
+              if (contributors.value.length === 0) contributors.value = FALLBACK_CONTRIBUTORS
+              setCached(contribsKey, contributors.value)
+            })
+        )
+      }
+    }
+
+    // If all requested resources are already loaded/cached, do nothing!
+    if (promises.length === 0) {
+      return
+    }
+
     isLoading.value = true
     errorMessage.value = null
 
     try {
-      const promises: Promise<any>[] = []
-
-      // 1. Repo metadata (required across views)
-      const repoKey = `${owner}/${repo}:meta`
-      const cachedRepo = getCached<GitHubRepository>(repoKey)
-      if (!force && cachedRepo) {
-        repository.value = cachedRepo
-      } else {
-        promises.push(
-          fetchRepository(owner, repo)
-            .then((data) => {
-              repository.value = data
-              setCached(repoKey, data)
-              isFallback.value = false
-            })
-            .catch((err) => {
-              console.warn('OpsLens: Failed to fetch repository metadata', err)
-              if (!repository.value) repository.value = FALLBACK_REPO
-              isFallback.value = true
-            })
-        )
-      }
-
-      // 2. Pull Requests
-      if (resourcesToLoad.includes('prs')) {
-        const prsKey = `${owner}/${repo}:prs`
-        const cachedPRs = getCached<GitHubPullRequest[]>(prsKey)
-        if (!force && cachedPRs) {
-          pullRequests.value = cachedPRs
-        } else {
-          promises.push(
-            fetchPullRequests(owner, repo, 'all', 60)
-              .then((data) => {
-                pullRequests.value = data
-                setCached(prsKey, data)
-              })
-              .catch((err) => {
-                console.warn('OpsLens: Failed to fetch pull requests', err)
-                if (pullRequests.value.length === 0) pullRequests.value = FALLBACK_PULL_REQUESTS
-              })
-          )
-        }
-      }
-
-      // 3. Issues
-      if (resourcesToLoad.includes('issues')) {
-        const issuesKey = `${owner}/${repo}:issues`
-        const cachedIssues = getCached<GitHubIssue[]>(issuesKey)
-        if (!force && cachedIssues) {
-          issues.value = cachedIssues
-        } else {
-          promises.push(
-            fetchIssues(owner, repo, 'all', 60)
-              .then((data) => {
-                issues.value = data
-                setCached(issuesKey, data)
-              })
-              .catch((err) => {
-                console.warn('OpsLens: Failed to fetch issues', err)
-                if (issues.value.length === 0) issues.value = FALLBACK_ISSUES
-              })
-          )
-        }
-      }
-
-      // 4. Commits
-      if (resourcesToLoad.includes('commits')) {
-        const commitsKey = `${owner}/${repo}:commits`
-        const cachedCommits = getCached<GitHubCommitItem[]>(commitsKey)
-        if (!force && cachedCommits) {
-          commits.value = cachedCommits
-        } else {
-          promises.push(
-            fetchCommits(owner, repo, 60)
-              .then((data) => {
-                commits.value = data
-                setCached(commitsKey, data)
-              })
-              .catch((err) => {
-                console.warn('OpsLens: Failed to fetch commits', err)
-                if (commits.value.length === 0) commits.value = FALLBACK_COMMITS
-              })
-          )
-        }
-      }
-
-      // 5. Releases
-      if (resourcesToLoad.includes('releases')) {
-        const releasesKey = `${owner}/${repo}:releases`
-        const cachedReleases = getCached<GitHubRelease[]>(releasesKey)
-        if (!force && cachedReleases) {
-          releases.value = cachedReleases
-        } else {
-          promises.push(
-            fetchReleases(owner, repo, 20)
-              .then((data) => {
-                releases.value = data
-                setCached(releasesKey, data)
-              })
-              .catch((err) => {
-                console.warn('OpsLens: Failed to fetch releases', err)
-                if (releases.value.length === 0) releases.value = FALLBACK_RELEASES
-              })
-          )
-        }
-      }
-
-      // 6. Contributors
-      if (resourcesToLoad.includes('contributors')) {
-        const contribsKey = `${owner}/${repo}:contribs`
-        const cachedContribs = getCached<GitHubContributor[]>(contribsKey)
-        if (!force && cachedContribs) {
-          contributors.value = cachedContribs
-        } else {
-          promises.push(
-            fetchContributors(owner, repo, 30)
-              .then((data) => {
-                contributors.value = data
-                setCached(contribsKey, data)
-              })
-              .catch((err) => {
-                console.warn('OpsLens: Failed to fetch contributors', err)
-                if (contributors.value.length === 0) contributors.value = FALLBACK_CONTRIBUTORS
-              })
-          )
-        }
-      }
-
-      if (promises.length > 0) {
-        await Promise.allSettled(promises)
-      }
-
+      await Promise.allSettled(promises)
       rateLimit.value = getLastRateLimit()
       lastRefreshedAt.value = new Date()
     } catch (err: any) {
